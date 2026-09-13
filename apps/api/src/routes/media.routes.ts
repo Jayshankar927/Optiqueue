@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { handleMediaUpload } from '../controllers/media.controller';
+import { handleMediaUpload, getJobStatus } from '../controllers/media.controller';
 import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE_BYTES } from '@optiqueue/shared';
 import { ENV } from '../config/env';
 
@@ -42,5 +42,6 @@ const upload = multer({
 });
 
 router.post('/upload', upload.single('file'), handleMediaUpload);
+router.get('/status/:jobId', getJobStatus);
 
 export default router;
