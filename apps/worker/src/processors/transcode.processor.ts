@@ -11,7 +11,8 @@ export interface TranscodeResult {
 
 export const transcodeMedia = (
   inputPath: string,
-  targetFormat: SupportedFormat
+  targetFormat: SupportedFormat,
+  onProgress?: (progress: number) => void
 ): Promise<TranscodeResult> => {
   return new Promise((resolve, reject) => {
     if (!fs.existsSync(inputPath)) {
@@ -28,8 +29,7 @@ export const transcodeMedia = (
       command
         .outputOptions([
           '-c:v libwebp',
-          '-quality 80',
-          '-pix_fmt yuv420p'
+          '-quality 80'
         ]);
     } else if (targetFormat === 'mp4') {
       command
@@ -45,6 +45,11 @@ export const transcodeMedia = (
 
     command
       .output(outputPath)
+      .on('progress', (progress) => {
+        if (onProgress && progress.percent) {
+          onProgress(Math.round(progress.percent));
+        }
+      })
       .on('end', () => {
         const originalSize = fs.statSync(inputPath).size;
         const transcodedSize = fs.statSync(outputPath).size;

@@ -1,9 +1,9 @@
 import { Queue } from 'bullmq';
 import { QUEUE_NAME, TranscodeJobPayload } from '@optiqueue/shared';
-import { redisConnection } from '../config/redis';
+import { redisOptions } from '../config/redis';
 
 export const mediaQueue = new Queue<TranscodeJobPayload>(QUEUE_NAME, {
-  connection: redisConnection,
+  connection: redisOptions,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
