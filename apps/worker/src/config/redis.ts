@@ -1,10 +1,14 @@
 import { Redis, RedisOptions } from 'ioredis';
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL;
+
+if (!redisUrl) {
+  throw new Error('REDIS_URL environment variable is missing.');
+}
 
 const isTls = redisUrl.startsWith('rediss://');
 
-export const redisOptions: RedisOptions = {
+const redisOptions: RedisOptions = {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
   ...(isTls && {
