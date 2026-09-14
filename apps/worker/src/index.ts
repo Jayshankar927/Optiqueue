@@ -2,7 +2,7 @@ import { Worker, Job } from 'bullmq';
 import { QUEUE_NAME, TranscodeJobPayload } from '@optiqueue/shared';
 import fs from 'fs';
 import path from 'path';
-import { redisOptions } from './config/redis';
+import { redisConnection } from './config/redis';
 import { transcodeMedia } from './processors/transcode.processor';
 import { uploadToStorage } from './services/storage.service';
 import { db } from './services/db.service';
@@ -44,7 +44,7 @@ const worker = new Worker<TranscodeJobPayload>(
     };
   },
   {
-    connection: redisOptions,
+    connection: redisConnection,
     concurrency: 1
   }
 );
@@ -66,6 +66,7 @@ worker.on('failed', async (job: Job | undefined, err: Error) => {
 
 const shutdown = async () => {
   await worker.close();
+  await redisConnection.quit();
   await db.close();
   process.exit(0);
 };

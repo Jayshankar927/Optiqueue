@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { ENV } from './config/env';
 import mediaRoutes from './routes/media.routes';
+import '@optiqueue/worker';
 
 const app = express();
 
@@ -20,5 +21,5 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 app.listen(ENV.PORT, () => {
-  console.log(`OptiQueue API listening on http://localhost:${ENV.PORT}`);
+  console.log(`OptiQueue API listening on port ${ENV.PORT}`);
 });
