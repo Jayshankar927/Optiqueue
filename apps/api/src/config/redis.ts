@@ -9,11 +9,10 @@ import { Redis, RedisOptions } from 'ioredis';
 const redisUrl = process.env.REDIS_URL;
 
 if (!redisUrl) {
-  console.error('CRITICAL: REDIS_URL is not set. process.env is missing REDIS_URL.');
+  throw new Error('FATAL: REDIS_URL environment variable is missing in process.env!');
 }
 
-const targetUrl = redisUrl || 'redis://127.0.0.1:6379';
-const isTls = targetUrl.startsWith('rediss://');
+const isTls = redisUrl.startsWith('rediss://');
 
 export const redisOptions: RedisOptions = {
   maxRetriesPerRequest: null,
@@ -26,7 +25,11 @@ export const redisOptions: RedisOptions = {
   })
 };
 
-export const redisConnection = new Redis(targetUrl, redisOptions);
+export const redisConnection = new Redis(redisUrl, redisOptions);
+
+redisConnection.on('connect', () => {
+  console.log('Successfully connected to Redis instance.');
+});
 
 redisConnection.on('error', (err) => {
   console.error('Redis connection error in API:', err.message);
